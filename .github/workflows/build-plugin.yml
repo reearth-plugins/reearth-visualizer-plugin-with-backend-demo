@@ -48,8 +48,8 @@ jobs:
       - name: Extract id and version
         run: |
           cd plugin
-          id=$(node -e "const yml = require('yml'); const fs = require('fs'); const doc = yml.parse(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.id);")
-          version=$(node -e "const yml = require('yml'); const fs = require('fs'); const doc = yml.parse(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.version);")
+          id=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.id);")
+          version=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.version);")
           zip_file_name="${id}~${version}"
           echo "ZIP_FILE_NAME=${zip_file_name}" >> $GITHUB_ENV
 
