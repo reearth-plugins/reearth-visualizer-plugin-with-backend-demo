@@ -1,10 +1,5 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@3.0.0"
-    }
-  },
-  "buildCommand": "echo 'API only - no build needed'",
   "outputDirectory": ".",
-  "installCommand": "yarn install"
+  "buildCommand": "echo 'skip build'",
+  "installCommand": "corepack enable && yarn install --immutable"
 }
