@@ -37,16 +37,18 @@ jobs:
       # Install dependencies using Yarn
       - name: Install dependencies
         run: yarn install
+        working-directory: ./plugin
 
       # Build the project using Yarn
       - name: Build the project
         run: yarn build
+        working-directory: ./plugin
 
       # Extract `id` and `version` from reearth.yml and create a custom artifact name
       - name: Extract id and version
         run: |
-          id=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.id);")
-          version=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('public/reearth.yml', 'utf8')); console.log(doc.version);")
+          id=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('plugin/public/reearth.yml', 'utf8')); console.log(doc.id);")
+          version=$(node -e "const yaml = require('js-yaml'); const fs = require('fs'); const doc = yaml.load(fs.readFileSync('plugin/public/reearth.yml', 'utf8')); console.log(doc.version);")
           zip_file_name="${id}~${version}"
           echo "ZIP_FILE_NAME=${zip_file_name}" >> $GITHUB_ENV
 
@@ -55,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ZIP_FILE_NAME }} # No .zip extension here
-          path: ./dist
+          path: ./plugin/dist
