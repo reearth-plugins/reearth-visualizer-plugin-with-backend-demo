@@ -2,7 +2,7 @@ import { VercelRequest } from "@vercel/node";
 
 export type AuthenticatedRequest = {
   // No user info needed for static key auth
-} & VercelRequest
+} & VercelRequest;
 
 export function authenticate(req: AuthenticatedRequest): boolean {
   try {
@@ -18,7 +18,6 @@ export function authenticate(req: AuthenticatedRequest): boolean {
       return false;
     }
 
-    // Get API key dynamically to allow test overrides
     const apiSecretKey = process.env.API_SECRET_KEY;
 
     // Simple comparison with static API key

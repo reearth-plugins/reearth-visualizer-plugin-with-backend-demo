@@ -65,7 +65,7 @@ describe('CMS Service', () => {
         photoUrl: '',
         description: undefined,
         author: '',
-        position: { type: 'Point', coordinates: [0, 0] },
+        position: undefined,
         createdAt: '2024-01-15T10:30:00Z'
       });
     });

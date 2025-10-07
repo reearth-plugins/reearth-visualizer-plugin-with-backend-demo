@@ -14,12 +14,12 @@ type CMSItem = {
     value: string | number | object | boolean | null;
   }[];
   createdAt: string;
-}
+};
 
 type CMSResponse = {
   items: CMSItem[];
   totalCount: number;
-}
+};
 
 type CMSAsset = {
   id: string;
@@ -28,7 +28,7 @@ type CMSAsset = {
   size: number;
   contentType: string;
   createdAt: string;
-}
+};
 
 class CMSService {
   private getHeaders() {
@@ -39,10 +39,33 @@ class CMSService {
   }
 
   private transformCMSItemToPhotograph(item: CMSItem): Photograph {
-    const fields = item.fields.reduce((acc, field) => {
-      acc[field.key] = field.value;
-      return acc;
-    }, {} as Record<string, string | number | object | boolean | null>);
+    const fields = item.fields.reduce(
+      (acc, field) => {
+        acc[field.key] = field.value;
+        return acc;
+      },
+      {} as Record<string, string | number | object | boolean | null>
+    );
+
+    // Parse position from GeoJSON string if it exists
+    let position: { type: "Point"; coordinates: [number, number] } | undefined;
+    if (fields.position && typeof fields.position === "string") {
+      try {
+        position = JSON.parse(fields.position);
+      } catch (error) {
+        console.warn("Failed to parse position GeoJSON:", error);
+        position = undefined;
+      }
+    } else if (
+      typeof fields.position === "object" &&
+      fields.position !== null
+    ) {
+      // Handle case where position is already an object
+      position = fields.position as {
+        type: "Point";
+        coordinates: [number, number];
+      };
+    }
 
     return {
       id: item.id,
@@ -50,7 +73,7 @@ class CMSService {
       photoUrl: (fields["photo-url"] as string) || "",
       description: fields.description as string | undefined,
       author: (fields.author as string) || "",
-      position: (fields.position as { type: "Point"; coordinates: [number, number] }) || { type: "Point", coordinates: [0, 0] },
+      position,
       createdAt: item.createdAt,
     };
   }
@@ -116,7 +139,7 @@ class CMSService {
   ): Promise<UploadedAsset> {
     try {
       const formData = new FormData();
-      formData.append('file', file.buffer, {
+      formData.append("file", file.buffer, {
         filename: file.originalname,
         contentType: file.mimetype,
       });
