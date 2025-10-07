@@ -4,12 +4,14 @@ export type Photograph = {
   photoUrl: string;
   description?: string;
   author: string;
-  position: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
+  position:
+    | {
+        type: "Point";
+        coordinates: [number, number];
+      }
+    | undefined;
   createdAt?: string;
-}
+};
 
 export type CreatePhotographRequest = {
   title: string;
@@ -17,10 +19,10 @@ export type CreatePhotographRequest = {
   description?: string;
   author: string;
   position: {
-    type: 'Point';
+    type: "Point";
     coordinates: [number, number];
   };
-}
+};
 
 export type ApiResponse<T> = {
   success: boolean;
@@ -34,7 +36,7 @@ export type ApiResponse<T> = {
       message: string;
     }[];
   };
-}
+};
 
 export type UploadedAsset = {
   id: string;
@@ -43,4 +45,4 @@ export type UploadedAsset = {
   size: number;
   mimeType: string;
   uploadedAt: string;
-}
+};

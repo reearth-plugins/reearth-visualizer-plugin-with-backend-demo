@@ -15,8 +15,18 @@ https://your-server-domain.vercel.app/api
 All API requests require authentication. Include the authorization header:
 
 ```text
-Authorization: Bearer <your-jwt-token>
+Authorization: Bearer <your-api-secret-key>
 ```
+
+**Note:** The API uses static API key authentication, not JWT tokens.
+
+## Data Format Notes
+
+**Position Field Handling:**
+
+- **API Input/Output:** Position data is sent and received as GeoJSON objects
+- **CMS Storage:** Internally, position data is stored as GeoJSON strings in the CMS and parsed back to objects when retrieved
+- **Client Usage:** Always use GeoJSON objects in your requests and expect GeoJSON objects in responses
 
 ---
 
@@ -27,6 +37,12 @@ Authorization: Bearer <your-jwt-token>
 Retrieve a list of all photographs.
 
 **Endpoint:** `GET /api/photographs`
+
+**Headers Required:**
+
+```text
+Authorization: Bearer <your-api-secret-key>
+```
 
 **Response:**
 
@@ -43,7 +59,8 @@ Retrieve a list of all photographs.
       "position": {
         "type": "Point",
         "coordinates": [139.6438652726942, 35.79418736999594]
-      }
+      },
+      "createdAt": "2024-01-15T10:30:00Z"
     }
   ],
   "total": 1
@@ -92,6 +109,13 @@ Retrieve a list of all photographs.
 Create a new photograph record.
 
 **Endpoint:** `POST /api/photographs`
+
+**Headers Required:**
+
+```text
+Authorization: Bearer <your-api-secret-key>
+Content-Type: application/json
+```
 
 **Request Body:**
 
@@ -170,6 +194,12 @@ Create a new photograph record.
 Upload an image file and get a URL for use in photograph records.
 
 **Endpoint:** `POST /api/assets/upload`
+
+**Headers Required:**
+
+```text
+Authorization: Bearer <your-api-secret-key>
+```
 
 **Request:**
 
