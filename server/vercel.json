@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs22.x"
-    }
-  },
   "outputDirectory": ".",
   "buildCommand": "echo 'skip build'",
   "installCommand": "corepack enable && yarn install --immutable"
