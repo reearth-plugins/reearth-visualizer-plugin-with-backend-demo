@@ -9,9 +9,24 @@ import { validateRequest, PhotographSchema } from "../src/utils/validation.js";
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "*",
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    const corsOrigin = process.env.CORS_ORIGIN;
+    if (!corsOrigin) {
+      callback(null, true);
+      return;
+    }
+    
+    const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 // Apply CORS middleware
