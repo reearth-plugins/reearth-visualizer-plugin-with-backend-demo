@@ -1,34 +1,34 @@
-id: reearth-visualizer-plugin-shadcn-template
-name: Visualizer plugin shadcn template
+id: reearth-visualizer-plugin-street-photograph
+name: Visualizer plugin street photograph
 version: 1.0.0
 extensions:
   - id: sp_submitter
     type: widget
     name: Street Photograph Submitter
+    layout:
+      location:
+        zone: outer
+        section: left
+        area: top
     schema:
       groups:
-        - id: appearance
-          title: Appearance
+        - id: api
+          title: API
           fields:
-            - id: primary_color
-              title: Primary color
+            - id: base_url
+              title: Base URL
               type: string
-              ui: color
-  - id: sp_inspector
-    type: widget
-    name: Street Photograph Inspector
-    schema:
-      groups:
-        - id: appearance
-          title: Appearance
-          fields:
-            - id: primary_color
-              title: Primary color
+            - id: api_key
+              title: API Key
               type: string
-              ui: color
-  - id: sp_loader
+  - id: sp_viewer
     type: widget
-    name: Street Photograph Loader
+    name: Street Photograph Viewer
+    layout:
+      location:
+        zone: outer
+        section: right
+        area: top
     schema:
       groups:
         - id: api

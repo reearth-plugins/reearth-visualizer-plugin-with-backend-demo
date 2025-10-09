@@ -8,15 +8,18 @@ import { sendSuccess, sendError } from "../../src/utils/response.js";
 
 // CORS configuration
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
     const corsOrigin = process.env.CORS_ORIGIN;
     if (!corsOrigin) {
       callback(null, true);
       return;
     }
-    
-    const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
-    
+
+    const allowedOrigins = corsOrigin.split(",").map((o) => o.trim());
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
