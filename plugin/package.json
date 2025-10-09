@@ -6,11 +6,7 @@
     "node": ">=20.11.0"
   },
   "scripts": {
-    "dev:demo:main": "cross-env EXTENSION_NAME=demo UI_NAME=main vite -c configs/ui.ts",
-    "build:demo:main": "cross-env EXTENSION_NAME=demo UI_NAME=main vite build -c configs/ui.ts",
-    "build:demo:extension": "cross-env EXTENSION_NAME=demo vite build -c configs/extension.ts",
-    "build:demo": "run-s build:demo:main build:demo:extension",
-    "build": "run-s build:demo zip",
+    "build": "run-s build:sp_submitter build:sp_viewer zip",
     "preview": "vite preview --port 5005 --strict-port",
     "zip": "node ./scripts/zip.mjs",
     "manage": "node ./scripts/manage.mjs",
@@ -18,7 +14,17 @@
     "lint": "eslint .",
     "fix": "eslint --fix .",
     "format": "prettier --write .",
-    "dev-build": "concurrently 'yarn dev:demo:main' 'yarn build:demo:main --watch' 'yarn build:demo:extension --watch' 'vite preview --port 5005 --strict-port'"
+    "dev-build": "concurrently 'yarn dev:sp_submitter:submitter' 'yarn build:sp_submitter:submitter --watch' 'yarn build:sp_submitter:extension --watch' 'yarn build:sp_viewer:infomodal --watch' 'yarn build:sp_viewer:viewer --watch' 'yarn build:sp_viewer:extension --watch' 'vite preview --port 5005 --strict-port'",
+    "dev:sp_submitter:submitter": "cross-env EXTENSION_NAME=sp_submitter UI_NAME=submitter vite -c configs/ui.ts",
+    "build:sp_submitter:submitter": "cross-env EXTENSION_NAME=sp_submitter UI_NAME=submitter vite build -c configs/ui.ts",
+    "build:sp_submitter:extension": "cross-env EXTENSION_NAME=sp_submitter vite build -c configs/extension.ts",
+    "build:sp_submitter": "run-s build:sp_submitter:submitter build:sp_submitter:extension",
+    "dev:sp_viewer:viewer": "cross-env EXTENSION_NAME=sp_viewer UI_NAME=viewer vite -c configs/ui.ts",
+    "build:sp_viewer:viewer": "cross-env EXTENSION_NAME=sp_viewer UI_NAME=viewer vite build -c configs/ui.ts",
+    "build:sp_viewer:extension": "cross-env EXTENSION_NAME=sp_viewer vite build -c configs/extension.ts",
+    "build:sp_viewer": "run-s build:sp_viewer:viewer build:sp_viewer:infomodal build:sp_viewer:extension",
+    "dev:sp_viewer:infomodal": "cross-env EXTENSION_NAME=sp_viewer UI_NAME=infomodal vite -c configs/ui.ts",
+    "build:sp_viewer:infomodal": "cross-env EXTENSION_NAME=sp_viewer UI_NAME=infomodal vite build -c configs/ui.ts"
   },
   "dependencies": {
     "@radix-ui/react-icons": "1.3.2",

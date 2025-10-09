@@ -39,7 +39,7 @@ class CMSService {
   }
 
   private transformCMSItemToPhotograph(item: CMSItem): Photograph {
-    const fields = item.fields.reduce(
+    const fields = (item.fields || []).reduce(
       (acc, field) => {
         acc[field.key] = field.value;
         return acc;
@@ -85,7 +85,7 @@ class CMSService {
         { key: "photo-url", value: photo.photoUrl },
         { key: "description", value: photo.description || "" },
         { key: "author", value: photo.author },
-        { key: "position", value: photo.position },
+        { key: "position", value: JSON.stringify(photo.position, null, 2) },
       ],
     };
   }
@@ -99,13 +99,13 @@ class CMSService {
         { headers: this.getHeaders() }
       );
 
-      const photographs = response.data.items.map((item) =>
+      const photographs = (response.data.items || []).map((item) =>
         this.transformCMSItemToPhotograph(item)
       );
 
       return {
         items: photographs,
-        total: response.data.totalCount,
+        total: response.data.totalCount || 0,
       };
     } catch (error) {
       console.error("Failed to fetch photographs from CMS:", error);
@@ -144,14 +144,23 @@ class CMSService {
         contentType: file.mimetype,
       });
 
+      const contentLength: number = await new Promise((resolve, reject) => {
+        (formData as any).getLength((err: Error | null, len: number) => {
+          if (err) reject(err);
+          else resolve(len);
+        });
+      });
+
       const response = await axios.post<CMSAsset>(
         `${CMS_BASE_URL}/projects/${projectId}/assets`,
         formData,
         {
           headers: {
-            ...this.getHeaders(),
+            Authorization: `Bearer ${CMS_TOKEN}`,
             ...formData.getHeaders(),
+            "Content-Length": contentLength,
           },
+          maxBodyLength: Infinity,
         }
       );
 
