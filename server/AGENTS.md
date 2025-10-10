@@ -1,58 +1,116 @@
-# Server Development Agent Instructions
+# Re:Earth Visualizer Plugin Server (Backend)
+
+This is the backend API server for the Re:Earth Visualizer street photography plugin, built with Node.js and TypeScript, designed for Vercel serverless deployment.
 
 ## Project Overview
 
-This is a Node.js server backend designed for the Re-Earth visualizer plugin. The server is specifically architected for deployment on Vercel's serverless platform.
+A Node.js backend that provides REST API endpoints for the street photography plugin, integrating with Re:Earth CMS for data persistence and managing image uploads.
 
-## Technology Stack
+## Tech Stack
 
-- **Node.js** - Runtime environment
-- **TypeScript** - For type safety and better development experience
-- **Vercel** - Serverless deployment platform
+- **Node.js 22.x** with **TypeScript 5.9.3**
+- **Vercel** serverless functions for deployment
+- **Axios** for HTTP requests to external APIs
+- **Multer** for file upload handling
+- **Zod** for runtime type validation
+- **Vitest** for testing framework
 
-## Deployment Architecture
+## Architecture
 
-The server follows Vercel's serverless function architecture, where each API endpoint is deployed as an individual serverless function. This ensures optimal performance, automatic scaling, and cost-effective resource usage.
+### Serverless Functions
 
-## Core Functionality
+```
+api/
+├── photographs.ts          # GET/POST photographs endpoint
+└── assets/
+    └── upload.ts          # POST image upload endpoint
+```
 
-The server provides REST API endpoints that will be called from the web application (plugin). It acts as a middleware layer, communicating with external CMS systems to retrieve and update data for the Re-Earth visualizer plugin.
+### Core Services
 
-### API Communication Flow
+```
+src/
+├── services/
+│   └── cms.ts             # Re:Earth CMS integration service
+├── utils/
+│   ├── auth.ts            # JWT authentication utilities
+│   ├── validation.ts      # Request validation with Zod
+│   └── response.ts        # Standardized API responses
+└── types/
+    └── index.ts           # TypeScript type definitions
+```
 
-1. **Plugin → Server**: Web app makes API requests to server endpoints
-2. **Server → CMS**: Server communicates with external CMS system
-3. **CMS → Server**: CMS returns data to server
-4. **Server → Plugin**: Server processes and returns data to web app
+## API Endpoints
+
+### Photographs Management
+
+- **`GET /api/photographs`** - Retrieve all street photographs
+- **`POST /api/photographs`** - Create new photograph entry
+
+### Asset Management
+
+- **`POST /api/assets/upload`** - Upload image files with validation
+
+## Development Commands
+
+```bash
+yarn dev:local             # Start development server on port 5200
+yarn build                 # Build TypeScript to dist/
+yarn type-check           # TypeScript type checking
+yarn lint                 # Run ESLint
+yarn lint:fix             # Fix ESLint issues
+```
+
+## Testing
+
+```bash
+yarn test                  # Run all tests
+yarn test:watch           # Run tests in watch mode
+yarn test:coverage        # Run tests with coverage report
+```
+
+### Test Coverage
+
+- API endpoints with mock data
+- CMS service integration
+- Utility functions (auth, validation, response)
+- Error handling scenarios
+
+## Environment Configuration
+
+Required environment variables for deployment:
+
+```bash
+REEARTH_CMS_INTEGRATION_API_BASE_URL=https://api.reearth.dev
+REEARTH_CMS_INTEGRATION_API_ACCESS_TOKEN=your-cms-token
+REEARTH_CMS_PROJECT_PHOTOGRAPHS_MODEL_ID=your-model-id
+API_SECRET_KEY=your_secret_key
+CORS_ORIGIN=null
+```
+
+Note: API_SECRET_KEY is static, please generate a secure random string for production. it will be required for authenticating requests from the plugin.
 
 ## CMS Integration
 
-The server will communicate with **Re:Earth CMS** as the external content management system. All CMS integration details and API specifications should follow the documentation at `docs/reearth-cms-integration-api-document.md`.
+The server integrates with **Re:Earth CMS Integration API** for:
 
-### CMS Communication
+- **Data persistence** for photograph metadata
+- **Asset management** for uploaded images
+- **Authentication** via API tokens
 
-- Use Re:Earth CMS API endpoints for data retrieval and updates
-- Handle authentication and authorization for CMS access
-- Process and transform CMS data for plugin consumption
+API documentation available in `docs/reearth-cms-integration-api-document.md`.
 
-### CMS Authentication
+## Deployment
 
-The server requires an access token to communicate with Re:Earth CMS Integration API. This token should be configured as a Vercel environment variable:
+Designed for **Vercel** serverless deployment:
 
-- **Environment Variable**: `REEARTH_CMS_INTEGRATION_API_ACCESS_TOKEN`
-- **Storage**: Vercel Project Settings → Environment Variables
-- **Usage**: Include in Authorization header as `Bearer <token>` for all CMS API requests
+1. Connect repository to Vercel
+2. Configure environment variables in dashboard
+3. Auto-deploy on push to main branch
 
-## Code Quality Standards
+## CORS Configuration
 
-### Markdown Linting Rules
+Supports configurable CORS origins for plugin integration:
 
-All documentation files should follow markdownlint standards:
-
-- **MD022**: Headings must be surrounded by blank lines above and below
-- **MD031**: Fenced code blocks must have blank lines before and after
-- **MD032**: Lists must have blank lines before and after
-- **MD040**: Fenced code blocks must specify a language (e.g., `json`, `javascript`)
-- **MD047**: Files must end with exactly one newline character
-
-These rules ensure consistent, readable documentation formatting across the project.
+- Production: Configure via `CORS_ORIGIN` environment variable
+- Note: for plugin call, please set `null` to allow all origins.
