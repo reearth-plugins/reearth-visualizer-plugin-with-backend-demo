@@ -1,1 +1,1 @@
-server/AGENTS.md
+AGENTS.md
