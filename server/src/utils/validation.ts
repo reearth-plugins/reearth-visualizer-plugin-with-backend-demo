@@ -11,7 +11,8 @@ export const PhotographSchema = z.object({
       z.number().min(-180).max(180),
       z.number().min(-90).max(90)
     ])
-  })
+  }),
+  website: z.string().optional()
 });
 
 export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): {

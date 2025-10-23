@@ -4,20 +4,24 @@ import cors from "cors";
 import { cmsService } from "../src/services/cms.js";
 import { CreatePhotographRequest } from "../src/types";
 import { authenticate, AuthenticatedRequest } from "../src/utils/auth.js";
+import { createPhotographRateLimiter } from "../src/utils/rateLimiter.js";
 import { sendSuccess, sendError } from "../src/utils/response.js";
 import { validateRequest, PhotographSchema } from "../src/utils/validation.js";
 
 // CORS configuration
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
     const corsOrigin = process.env.CORS_ORIGIN;
     if (!corsOrigin) {
       callback(null, true);
       return;
     }
-    
-    const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
-    
+
+    const allowedOrigins = corsOrigin.split(",").map((o) => o.trim());
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -105,6 +109,32 @@ async function handleCreatePhotograph(
   res: VercelResponse,
   modelId: string
 ) {
+  // Check rate limit for photograph creation
+  const rateLimitResult = createPhotographRateLimiter.consume(req);
+
+  // Add rate limit headers
+  res.setHeader("X-RateLimit-Limit", rateLimitResult.limit);
+  res.setHeader("X-RateLimit-Remaining", rateLimitResult.remaining);
+  res.setHeader(
+    "X-RateLimit-Reset",
+    new Date(rateLimitResult.resetTime).toISOString()
+  );
+
+  if (!rateLimitResult.success) {
+    return sendError(
+      res,
+      "RATE_LIMIT_EXCEEDED",
+      "Too many photograph submissions, please try again later.",
+      429,
+      [
+        {
+          field: "rate_limit",
+          message: `Please wait ${Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)} seconds before trying again.`,
+        },
+      ]
+    );
+  }
+
   const validation = validateRequest(PhotographSchema, req.body);
 
   if (!validation.success) {
@@ -115,6 +145,12 @@ async function handleCreatePhotograph(
       400,
       validation.errors
     );
+  }
+
+  // Honeypot validation - silently reject if website field is filled
+  if (validation.data?.website && validation.data.website.trim() !== "") {
+    // Return success to avoid tipping off bots, but don't create the photograph
+    return sendSuccess(res, { id: "blocked", message: "Success" }, 201);
   }
 
   try {

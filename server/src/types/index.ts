@@ -22,6 +22,7 @@ export type CreatePhotographRequest = {
     type: "Point";
     coordinates: [number, number];
   };
+  website?: string;
 };
 
 export type ApiResponse<T> = {
