@@ -13,6 +13,7 @@ type FormData = {
     type: "Point";
     coordinates: [number, number];
   } | null;
+  website: string;
 };
 
 export default () => {
@@ -22,6 +23,7 @@ export default () => {
     author: "",
     photoUrl: "",
     position: null,
+    website: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -115,6 +117,11 @@ export default () => {
         return;
       }
 
+      // Anti-bot validation
+      if (formData.website.trim() !== "") {
+        return;
+      }
+
       setIsSubmitting(true);
 
       try {
@@ -133,6 +140,7 @@ export default () => {
             author: "",
             photoUrl: "",
             position: null,
+            website: "",
           });
           setIsSubmitSuccess(true);
         } else {
