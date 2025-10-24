@@ -9,6 +9,8 @@ Node.js server for Re-Earth visualizer plugin with CMS integration, designed for
 - Image upload handling
 - JWT authentication
 - CORS support
+- **Rate limiting** - IP-based request throttling
+- **Honeypot protection** - Bot detection and silent blocking
 - TypeScript support
 
 ## API Endpoints
@@ -89,18 +91,47 @@ Deploy to Vercel:
 2. Set environment variables in Vercel dashboard
 3. Deploy automatically on push to main branch
 
+## Security Features
+
+### Rate Limiting
+
+The server implements IP-based rate limiting to prevent abuse:
+
+- **General API**: 30 requests per minute per IP
+- **Photograph Creation**: 30 requests per 15 minutes per IP
+- Returns appropriate HTTP 429 status and `Retry-After` headers
+- Automatic cleanup of expired rate limit entries
+
+Rate limit headers included in responses:
+- `X-RateLimit-Limit` - Maximum requests allowed
+- `X-RateLimit-Remaining` - Requests remaining in current window  
+- `X-RateLimit-Reset` - Time when rate limit resets
+
+### Honeypot Protection
+
+Protection against automated bot submissions:
+
+- Hidden `website` field in photograph submission forms
+- Legitimate users won't fill this field (hidden via CSS)
+- Bots often fill all available form fields
+- Submissions with filled `website` field are silently rejected
+- Returns successful response to avoid tipping off bots
+
 ## Project Structure
 
 ```
 server/
 ├── api/                 # Vercel serverless functions
-│   ├── photographs.ts   # Photographs endpoint
+│   ├── photographs.ts   # Photographs endpoint with rate limiting & honeypot
 │   └── assets/
 │       └── upload.ts    # Upload endpoint
 ├── src/
 │   ├── services/        # Business logic
 │   ├── types/           # TypeScript types
 │   └── utils/           # Utility functions
+│       ├── rateLimiter.ts  # Rate limiting implementation
+│       ├── validation.ts   # Request validation with honeypot
+│       └── ...
 ├── docs/                # API documentation
 └── package.json
 ```

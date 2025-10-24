@@ -16,6 +16,7 @@ A Re:Earth Visualizer plugin that provides interactive street photography visual
 - **TailwindCSS 4.1.10** with ShadCN/UI components
 - **Radix UI** primitives for accessible components
 - **Re:Earth Core** 0.0.7-alpha.38 for plugin API
+- **Security features** - Honeypot protection for bot prevention
 
 ## Architecture
 
@@ -75,6 +76,19 @@ yarn fix                   # Fix ESLint issues
 yarn format               # Format with Prettier
 yarn type                 # TypeScript type checking
 ```
+
+## Security Features
+
+### Honeypot Protection
+
+The submitter form includes client-side honeypot protection:
+
+- **Hidden field** - `website` input field hidden via CSS (`.hp` class)
+- **Bot detection** - Client-side validation rejects submissions with filled honeypot
+- **Silent rejection** - Prevents form submission without alerting bots
+- **Accessibility** - Properly configured with `tabIndex={-1}` and `aria-hidden`
+
+Works with server-side honeypot validation for comprehensive bot protection.
 
 ## Backend Integration
 
