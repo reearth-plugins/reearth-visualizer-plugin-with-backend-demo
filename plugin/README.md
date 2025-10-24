@@ -8,6 +8,7 @@ This template provides a minimal setup to develop a Re:Earth Visualizer Plugin w
 - **Vite 6.0.3** for build tooling
 - **TailwindCSS 4.1.10** for styling
 - **Radix UI** components with **ShadCN/UI**
+- **Security features** - Honeypot protection against bots
 
 ## Re:Earth Visualizer Plugin Structure
 
@@ -160,6 +161,20 @@ yarn preview
 ```
 
 Starts the preview server on port `5005`.
+
+## Security Features
+
+### Honeypot Protection
+
+The street photography submitter includes honeypot protection to prevent automated bot submissions:
+
+- **Hidden Website Field** - A hidden `website` input field (`src/extensions/sp_submitter/submitter/App.tsx:157-167`)
+- **CSS Concealment** - Field is hidden using `.hp` class with `display: none` (`src/extensions/sp_submitter/submitter/app.css:5-8`)
+- **Accessibility Considerations** - Field includes `tabIndex={-1}`, `autoComplete="off"`, and `aria-hidden="true"`
+- **Client-side Validation** - Submissions are silently rejected if honeypot field is filled (`src/extensions/sp_submitter/submitter/hooks.ts:121-123`)
+- **Bot Detection** - Legitimate users won't see or fill the field, while bots typically fill all form fields
+
+The honeypot works in conjunction with server-side validation for complete bot protection.
 
 ## Development Workflow with Re:Earth Visualizer
 
