@@ -68,14 +68,29 @@ export default async function handler(
 
   const modelId =
     process.env.REEARTH_CMS_PROJECT_PHOTOGRAPHS_MODEL_ID || "default-model-id";
+  const workspaceId =
+    process.env.REEARTH_CMS_WORKSPACE_ID || "default-workspace-id";
+  const projectId = process.env.REEARTH_CMS_PROJECT_ID || "default-project-id";
 
   try {
     switch (req.method) {
       case "GET":
-        return await handleGetPhotographs(req, res, modelId);
+        return await handleGetPhotographs(
+          req,
+          res,
+          workspaceId,
+          projectId,
+          modelId
+        );
 
       case "POST":
-        return await handleCreatePhotograph(req, res, modelId);
+        return await handleCreatePhotograph(
+          req,
+          res,
+          workspaceId,
+          projectId,
+          modelId
+        );
 
       default:
         return sendError(
@@ -94,10 +109,16 @@ export default async function handler(
 async function handleGetPhotographs(
   _req: VercelRequest,
   res: VercelResponse,
+  workspaceId: string,
+  projectId: string,
   modelId: string
 ) {
   try {
-    const result = await cmsService.getPhotographs(modelId);
+    const result = await cmsService.getPhotographs(
+      workspaceId,
+      projectId,
+      modelId
+    );
     return sendSuccess(res, result.items, 200, result.total);
   } catch (_error) {
     return sendError(res, "FETCH_FAILED", "Failed to fetch photographs", 500);
@@ -107,6 +128,8 @@ async function handleGetPhotographs(
 async function handleCreatePhotograph(
   req: VercelRequest,
   res: VercelResponse,
+  workspaceId: string,
+  projectId: string,
   modelId: string
 ) {
   // Check rate limit for photograph creation
@@ -155,6 +178,8 @@ async function handleCreatePhotograph(
 
   try {
     const photograph = await cmsService.createPhotograph(
+      workspaceId,
+      projectId,
       modelId,
       validation.data as CreatePhotographRequest
     );

@@ -91,11 +91,13 @@ class CMSService {
   }
 
   async getPhotographs(
+    workspaceId: string,
+    projectId: string,
     modelId: string
   ): Promise<{ items: Photograph[]; total: number }> {
     try {
       const response = await axios.get<CMSResponse>(
-        `${CMS_BASE_URL}/models/${modelId}/items`,
+        `${CMS_BASE_URL}/${workspaceId}/projects/${projectId}/models/${modelId}/items`,
         { headers: this.getHeaders() }
       );
 
@@ -114,6 +116,8 @@ class CMSService {
   }
 
   async createPhotograph(
+    workspaceId: string,
+    projectId: string,
     modelId: string,
     photograph: CreatePhotographRequest
   ): Promise<Photograph> {
@@ -121,7 +125,7 @@ class CMSService {
       const cmsData = this.transformPhotographToCMSFields(photograph);
 
       const response = await axios.post<CMSItem>(
-        `${CMS_BASE_URL}/models/${modelId}/items`,
+        `${CMS_BASE_URL}/${workspaceId}/projects/${projectId}/models/${modelId}/items`,
         cmsData,
         { headers: this.getHeaders() }
       );
@@ -134,6 +138,7 @@ class CMSService {
   }
 
   async uploadAsset(
+    workspaceId: string,
     projectId: string,
     file: Express.Multer.File
   ): Promise<UploadedAsset> {
@@ -152,7 +157,7 @@ class CMSService {
       });
 
       const response = await axios.post<CMSAsset>(
-        `${CMS_BASE_URL}/projects/${projectId}/assets`,
+        `${CMS_BASE_URL}/${workspaceId}/projects/${projectId}/assets`,
         formData,
         {
           headers: {
